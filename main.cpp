@@ -60,6 +60,30 @@ void teletransportarJogador(){
 
 }
 
+void teletransportarInimigo(Inimigo& inimigo){
+	cout << inimigo.x << endl;
+	double m = tanf(grausParaRadianos(inimigo.angulo));
+	double E = inimigo.y - 0;
+	double A = 1+pow(m,2);
+	double B = -2*pow(m,2)*inimigo.x + 2*E*m;
+	double C = pow(E,2) - 2*E*m*inimigo.x + pow(m,2)*pow(inimigo.x,2) - pow(arena.r,2);
+
+	double x1 = (-B + sqrt(pow(B,2) - 4*A*C))/(2*A);
+	double x2 = (-B - sqrt(pow(B,2) - 4*A*C))/(2*A);
+
+	double y1 = inimigo.y + m*(x1-inimigo.x);
+	double y2 = inimigo.y + m*(x2-inimigo.x);
+
+	if(fabs(inimigo.x - x1) < fabs(inimigo.x - x2)){
+		inimigo.x = x2;
+		inimigo.y = y2;
+	}else{
+		inimigo.x = x1;
+		inimigo.y = y1;
+	}
+
+}
+
 void reiniciarJogo(){
 	jogador = jogador_base;
 	velocidade_decolagem = 0;
@@ -188,6 +212,12 @@ void idle(void){
 	for(int i=0; i < inimigos_aereos.size(); i++){
 		inimigos_aereos.at(i).girarHelices(velocidade_decolagem * 2 * (timeDiference/1000));
 		inimigos_aereos.at(i).andar(velocidade_decolagem * (timeDiference/1000));
+
+		// Colisão com a arena
+		float distancia = sqrt(pow(inimigos_aereos.at(i).x,2)+pow(inimigos_aereos.at(i).y,2));
+		if(distancia > arena.r) {
+			teletransportarInimigo(inimigos_aereos.at(i));
+		}
 	}
 
 	if(teclas['r'] == 1) {
