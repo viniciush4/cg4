@@ -3,6 +3,8 @@
 #include "configuracao.h"
 #include "circulo.h"
 #include "jogador.h"
+#include "inimigo.h"
+#include "base.h"
 #include "linha.h"
 #include "tiro.h"
 #include "bomba.h"
@@ -19,8 +21,8 @@ using namespace std;
 int teclas[256];
 
 Configuracao configuracao;
-vector<Circulo> inimigos_aereos;
-vector<Circulo> inimigos_terrestres;
+vector<Inimigo> inimigos_aereos;
+vector<Base> inimigos_terrestres;
 vector<Tiro> tiros;
 vector<Bomba> bombas;
 Circulo arena;
@@ -161,6 +163,15 @@ void idle(void){
 			// Condições de remoção da bomba (saiu da arena ou chegou ao raio mínimo)
 			float distancia = sqrt(pow(bombas.at(i).x,2)+pow(bombas.at(i).y,2));
 			if(distancia > arena.r || bombas.at(i).r <= bombas.at(i).r_inicial / 2){
+				
+				// Se a bomba está em cima de alguma base inimiga, deleta a base
+				for(int j=0; j < inimigos_terrestres.size(); j++){
+					float distancia_base = sqrt(pow(bombas.at(i).x - inimigos_terrestres.at(j).x,2)+pow(bombas.at(i).y - inimigos_terrestres.at(j).y,2));
+					if(distancia_base < (bombas.at(i).r + inimigos_terrestres.at(j).r)){
+						inimigos_terrestres.erase(inimigos_terrestres.begin()+j);
+					}
+				}
+				
 				bombas.erase(bombas.begin()+i);
 			}
 		}
@@ -171,6 +182,12 @@ void idle(void){
 		if(teclas['d'] == 1) {
 			jogador.alterarAngulo(-1 * velocidade_decolagem * (timeDiference/1000));
 		}
+	}
+
+	// Atualiza os inimigos aéreos
+	for(int i=0; i < inimigos_aereos.size(); i++){
+		inimigos_aereos.at(i).girarHelices(velocidade_decolagem * 2 * (timeDiference/1000));
+		inimigos_aereos.at(i).andar(velocidade_decolagem * (timeDiference/1000));
 	}
 
 	if(teclas['r'] == 1) {
@@ -294,16 +311,32 @@ int main(int argc, char** argv){
 				arena = circulo;
 			}
 			if(!strcmp(circulo.fill,"red")){
-				circulo.cor_r = 1;
-				circulo.cor_g = 0;
-				circulo.cor_b = 0;
-				inimigos_aereos.push_back(circulo);
+				Inimigo i = Inimigo();
+				i.cor_r = 1;
+				i.cor_g = 0;
+				i.cor_b = 0;
+				i.x = circulo.x;
+				i.y = circulo.y;
+				i.r = circulo.r;
+				i.r_inicial = circulo.r;
+				i.fill = circulo.fill;
+				i.id = circulo.id;
+				i.escala = circulo.r;
+				inimigos_aereos.push_back(i);
 			}
 			if(!strcmp(circulo.fill,"orange")){
-				circulo.cor_r = 1;
-				circulo.cor_g = 0.5;
-				circulo.cor_b = 0;
-				inimigos_terrestres.push_back(circulo);
+				Base b = Base();
+				b.cor_r = 1;
+				b.cor_g = 0.5;
+				b.cor_b = 0;
+				b.x = circulo.x;
+				b.y = circulo.y;
+				b.r = circulo.r;
+				b.r_inicial = circulo.r;
+				b.fill = circulo.fill;
+				b.id = circulo.id;
+				b.escala = circulo.r;
+				inimigos_terrestres.push_back(b);
 			}
 			if(!strcmp(circulo.fill,"green")){
 				Jogador j = Jogador();
@@ -362,7 +395,7 @@ int main(int argc, char** argv){
 	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB);
 	glutInitWindowSize(arena.r*2, arena.r*2);
 	glutInitWindowPosition(100, 100);
-	glutCreateWindow("Trabalho 2");
+	glutCreateWindow("Trabalho 4");
 	glClearColor(0.0, 0.0, 0.0, 0.0);
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();

@@ -1,5 +1,5 @@
 #include <iostream>
-#include "jogador.h"
+#include "inimigo.h"
 #include <math.h>
 #include <GL/glut.h>
 
@@ -8,18 +8,18 @@ using namespace std;
 #define grausParaRadianos(g) g*(M_PI/180)
 #define radianosParaGraus(r) r*(180/M_PI)
 
-Jogador::Jogador(){
+Inimigo::Inimigo(){
 	this->x = 0.;
 	this->y = 0.;
 	this->r = 0.;
-    this->angulo = 0;
+    this->angulo = rand() % 360;
     this->escala = 1;
     this->angulo_canhao = 0;
     this->angulo_canhao_arena = 0;
     this->angulo_helices = 0;
 }
 
-Jogador::Jogador(float x, float y, float r, float cor_r, float cor_g, float cor_b, char* fill, int id){
+Inimigo::Inimigo(float x, float y, float r, float cor_r, float cor_g, float cor_b, char* fill, int id){
 	this->x = x;
 	this->y = y;
 	this->r = r;
@@ -29,14 +29,14 @@ Jogador::Jogador(float x, float y, float r, float cor_r, float cor_g, float cor_
     this->cor_b = cor_b;
     this->fill = fill;
     this->id = id;
-    this->angulo = 0;
+    this->angulo = rand() % 360;
     this->escala = 1;
     this->angulo_canhao = 0;
     this->angulo_canhao_arena = 0;
     this->angulo_helices = 0;
 }
 
-void Jogador::desenharPreenchido(){
+void Inimigo::desenharPreenchido(){
     glPushMatrix();
 
         // cout << x << ", " << y << endl;
@@ -205,47 +205,47 @@ void Jogador::desenharPreenchido(){
     glPopMatrix();
 }
 
-void Jogador::moverParaCima(float velocidade){
+void Inimigo::moverParaCima(float velocidade){
     this->y = this->y + velocidade;
 }
 
-void Jogador::moverParaBaixo(float velocidade){
+void Inimigo::moverParaBaixo(float velocidade){
     this->y = this->y - velocidade;
 }
 
-void Jogador::moverParaEsquerda(float velocidade){
+void Inimigo::moverParaEsquerda(float velocidade){
     this->x = this->x - velocidade;
 }
 
-void Jogador::moverParaDireita(float velocidade){
+void Inimigo::moverParaDireita(float velocidade){
     this->x = this->x + velocidade;
 }
 
-void Jogador::alterarAngulo(float velocidade){
+void Inimigo::alterarAngulo(float velocidade){
     this->angulo += velocidade;
     this->angulo_canhao_arena += velocidade;
 }
 
-void Jogador::alterarAnguloCanhao(float velocidade){
+void Inimigo::alterarAnguloCanhao(float velocidade){
     if(this->angulo_canhao + velocidade <= 45 && this->angulo_canhao + velocidade >= -45){
         this->angulo_canhao += velocidade;
         this->angulo_canhao_arena += velocidade;
     }
 }
 
-void Jogador::alterarEscala(float velocidade){
+void Inimigo::alterarEscala(float velocidade){
     this->escala += velocidade;
     this->r += velocidade;
 }
 
-void Jogador::andar(float velocidade){
+void Inimigo::andar(float velocidade){
     this->y += sin(grausParaRadianos(angulo)) * velocidade;
     this->x += cos(grausParaRadianos(angulo)) * velocidade;
 }
 
-void Jogador::girarHelices(float velocidade){
+void Inimigo::girarHelices(float velocidade){
     this->angulo_helices += velocidade;
 }
 
-Jogador::~Jogador(){
+Inimigo::~Inimigo(){
 }
