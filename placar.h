@@ -1,6 +1,6 @@
 #define NUMERO_SEGMENTOS 50
 
-class Inimigo {
+class Placar {
 public:
 	float x;
 	float y;
@@ -18,9 +18,10 @@ public:
 	float angulo_helices;
 	float somatorio_incremento_angulo;
 	bool incrementar_angulo;
+	float largura;
 
-	Inimigo();
-	Inimigo(float x, float y, float r, float cor_r, float cor_g, float cor_b, char* fill, int id);
+	Placar();
+	Placar(float largura);
 	void desenhar();
 	void desenharPreenchido();
 
@@ -36,5 +37,5 @@ public:
 	void andar(float velocidade);
 	void girarHelices(float velocidade);
 	
-	virtual ~Inimigo();
+	virtual ~Placar();
 };

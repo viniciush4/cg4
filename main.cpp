@@ -6,6 +6,7 @@
 #include "inimigo.h"
 #include "base.h"
 #include "linha.h"
+#include "placar.h"
 #include "tiro.h"
 #include "bomba.h"
 #include "tinyxml2.h"
@@ -29,6 +30,7 @@ Circulo arena;
 Jogador jogador;
 Jogador jogador_base;
 Linha pista;
+Placar placar;
 int estado = 0;
 float velocidade_decolagem = 0;
 int mouse_ultima_posicao_x = 0;
@@ -107,6 +109,13 @@ void verificarColisao(){
 		teletransportarJogador();
 }
 
+void exibirPlacar(void * font, string s, float x, float y, float z) {
+    glRasterPos3f(x, y, z);
+    for (size_t i = 0; i < s.length(); i++) {
+        glutBitmapCharacter(font, s[i]);
+    }
+}
+
 void display(void){
 
 	glClear(GL_COLOR_BUFFER_BIT);
@@ -132,6 +141,12 @@ void display(void){
 	}
 
 	jogador.desenharPreenchido();
+
+	placar.desenharPreenchido();
+
+	// exibirPlacar(GLUT_BITMAP_HELVETICA_18, "TESTE", 0, 0, 0);
+	glRasterPos3f(0, 0, 0);
+	glutBitmapCharacter(GLUT_BITMAP_HELVETICA_18, 'V');
 
 	glutSwapBuffers();
 }
@@ -218,14 +233,19 @@ void idle(void){
 			teletransportarInimigo(inimigos_aereos.at(i));
 		}
 		// Muda o ângulo (10 graus em 2 segundos)
-		float incremento_angulo = 50 / (2 / (timeDiference/1000));
+		float incremento_angulo = 180 / (5 / (timeDiference/1000));
+		incremento_angulo = inimigos_aereos.at(i).incrementar_angulo ? incremento_angulo : -incremento_angulo;
 		inimigos_aereos.at(i).somatorio_incremento_angulo += incremento_angulo;
-		if(inimigos_aereos.at(i).somatorio_incremento_angulo > 10){
-			incremento_angulo *= (-1);
+		if(inimigos_aereos.at(i).incrementar_angulo && inimigos_aereos.at(i).somatorio_incremento_angulo > 180){
 			inimigos_aereos.at(i).somatorio_incremento_angulo = 0;
+			inimigos_aereos.at(i).incrementar_angulo = !inimigos_aereos.at(i).incrementar_angulo;
+		}
+		if(!inimigos_aereos.at(i).incrementar_angulo && inimigos_aereos.at(i).somatorio_incremento_angulo < -180){
+			inimigos_aereos.at(i).somatorio_incremento_angulo = 0;
+			inimigos_aereos.at(i).incrementar_angulo = !inimigos_aereos.at(i).incrementar_angulo;
 		}
 		inimigos_aereos.at(i).alterarAngulo(incremento_angulo);
-		cout << incremento_angulo << endl;
+		cout << inimigos_aereos.at(0).somatorio_incremento_angulo << endl;
 	}
 
 	if(teclas['r'] == 1) {
@@ -428,6 +448,9 @@ int main(int argc, char** argv){
 		jogador.angulo = radianosParaGraus(angulo);
 		jogador.angulo_canhao_arena = radianosParaGraus(angulo);
 		jogador_base = jogador;
+
+		// Cria o placar
+		placar = Placar(arena.r);
 
 	glutInit(&argc, argv);
 	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB);

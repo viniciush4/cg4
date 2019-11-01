@@ -1,5 +1,5 @@
-all: tinyxml2 configuracao circulo jogador inimigo base linha tiro bomba
-	g++ main.cpp -o trabalhocg tinyxml2.o configuracao.o circulo.o jogador.o inimigo.o base.o linha.o tiro.o bomba.o -lglut -lGLU -lGL -std=c++11
+all: tinyxml2 configuracao circulo jogador inimigo base linha tiro bomba placar
+	g++ main.cpp -o trabalhocg tinyxml2.o configuracao.o circulo.o jogador.o inimigo.o base.o linha.o tiro.o bomba.o placar.o -lglut -lGLU -lGL -std=c++11
 	@echo "Done."
 
 tinyxml2: tinyxml2.cpp
@@ -28,6 +28,9 @@ tiro: tiro.cpp
 
 bomba: bomba.cpp
 	g++ -c bomba.cpp -std=c++11
+
+placar: placar.cpp
+	g++ -c placar.cpp -std=c++11
 
 clean:
 	@rm -f *.o trabalhocg
