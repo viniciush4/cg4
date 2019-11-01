@@ -16,6 +16,7 @@ public:
 	float angulo_canhao;
 	float angulo_canhao_arena;
 	float angulo_helices;
+	float somatorio_incremento_angulo;
 
 	Inimigo();
 	Inimigo(float x, float y, float r, float cor_r, float cor_g, float cor_b, char* fill, int id);

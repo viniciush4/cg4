@@ -32,6 +32,7 @@ Linha pista;
 int estado = 0;
 float velocidade_decolagem = 0;
 int mouse_ultima_posicao_x = 0;
+bool incrementar_angulo_inimigo = true;
 
 static GLdouble previousTime = 0;
 GLdouble currentTime;
@@ -61,7 +62,6 @@ void teletransportarJogador(){
 }
 
 void teletransportarInimigo(Inimigo& inimigo){
-	cout << inimigo.x << endl;
 	double m = tanf(grausParaRadianos(inimigo.angulo));
 	double E = inimigo.y - 0;
 	double A = 1+pow(m,2);
@@ -212,12 +212,20 @@ void idle(void){
 	for(int i=0; i < inimigos_aereos.size(); i++){
 		inimigos_aereos.at(i).girarHelices(velocidade_decolagem * 2 * (timeDiference/1000));
 		inimigos_aereos.at(i).andar(velocidade_decolagem * (timeDiference/1000));
-
 		// Colisão com a arena
 		float distancia = sqrt(pow(inimigos_aereos.at(i).x,2)+pow(inimigos_aereos.at(i).y,2));
 		if(distancia > arena.r) {
 			teletransportarInimigo(inimigos_aereos.at(i));
 		}
+		// Muda o ângulo (10 graus em 2 segundos)
+		float incremento_angulo = 50 / (2 / (timeDiference/1000));
+		inimigos_aereos.at(i).somatorio_incremento_angulo += incremento_angulo;
+		if(inimigos_aereos.at(i).somatorio_incremento_angulo > 10){
+			incremento_angulo *= (-1);
+			inimigos_aereos.at(i).somatorio_incremento_angulo = 0;
+		}
+		inimigos_aereos.at(i).alterarAngulo(incremento_angulo);
+		cout << incremento_angulo << endl;
 	}
 
 	if(teclas['r'] == 1) {
