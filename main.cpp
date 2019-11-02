@@ -183,7 +183,18 @@ void idle(void){
 			float distancia = sqrt(pow(tiros.at(i).x,2)+pow(tiros.at(i).y,2));
 			if(distancia > arena.r){
 				tiros.erase(tiros.begin()+i);
+			} 
+			else 
+			{
+				// Colisão com algum inimigo
+				for(int j=0; j < inimigos_aereos.size(); j++){
+					float distancia_inimigo = sqrt(pow(tiros.at(i).x - inimigos_aereos.at(j).x,2)+pow(tiros.at(i).y - inimigos_aereos.at(j).y,2));
+					if(distancia_inimigo < inimigos_aereos.at(j).r){
+						inimigos_aereos.erase(inimigos_aereos.begin()+j);
+					}
+				}
 			}
+			
 		}
 
 		// Atualiza estado das bombas
@@ -197,7 +208,7 @@ void idle(void){
 			}
 			// Condições de remoção da bomba (saiu da arena ou chegou ao raio mínimo)
 			float distancia = sqrt(pow(bombas.at(i).x,2)+pow(bombas.at(i).y,2));
-			if(teclas['q'] == 1 || distancia > arena.r || bombas.at(i).r <= bombas.at(i).r_inicial / 2){
+			if(distancia > arena.r || bombas.at(i).r <= bombas.at(i).r_inicial / 2){
 				
 				// Se a bomba está em cima de alguma base inimiga, deleta a base
 				for(int j=0; j < inimigos_terrestres.size(); j++){
