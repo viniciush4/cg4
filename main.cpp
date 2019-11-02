@@ -109,13 +109,6 @@ void verificarColisao(){
 		teletransportarJogador();
 }
 
-void exibirPlacar(void * font, string s, float x, float y, float z) {
-    glRasterPos3f(x, y, z);
-    for (size_t i = 0; i < s.length(); i++) {
-        glutBitmapCharacter(font, s[i]);
-    }
-}
-
 void display(void){
 
 	glClear(GL_COLOR_BUFFER_BIT);
@@ -143,11 +136,11 @@ void display(void){
 	jogador.desenharPreenchido();
 
 	placar.desenharPreenchido();
-
-	// exibirPlacar(GLUT_BITMAP_HELVETICA_18, "TESTE", 0, 0, 0);
-	glRasterPos3f(0, 0, 0);
-	glutBitmapCharacter(GLUT_BITMAP_HELVETICA_18, 'V');
-
+	
+	if(estado == 3){
+		placar.desenharMensagemFinal();
+	}
+	
 	glutSwapBuffers();
 }
 
@@ -156,6 +149,7 @@ void idle(void){
 	timeDiference = currentTime - previousTime;
 	previousTime = currentTime;
 
+	// Decolando
 	if(estado == 1){
 		
 		float distancia 		= sqrt(pow(pista.y2-pista.y1,2) + pow(pista.x2-pista.x1,2));
@@ -172,6 +166,8 @@ void idle(void){
 			estado = 2;
 
 	}
+
+	// Jogando
 	else if(estado == 2){
 
 		jogador.girarHelices(velocidade_decolagem * 2 * (timeDiference/1000));
@@ -201,13 +197,17 @@ void idle(void){
 			}
 			// Condições de remoção da bomba (saiu da arena ou chegou ao raio mínimo)
 			float distancia = sqrt(pow(bombas.at(i).x,2)+pow(bombas.at(i).y,2));
-			if(distancia > arena.r || bombas.at(i).r <= bombas.at(i).r_inicial / 2){
+			if(teclas['q'] == 1 || distancia > arena.r || bombas.at(i).r <= bombas.at(i).r_inicial / 2){
 				
 				// Se a bomba está em cima de alguma base inimiga, deleta a base
 				for(int j=0; j < inimigos_terrestres.size(); j++){
 					float distancia_base = sqrt(pow(bombas.at(i).x - inimigos_terrestres.at(j).x,2)+pow(bombas.at(i).y - inimigos_terrestres.at(j).y,2));
 					if(distancia_base < (bombas.at(i).r + inimigos_terrestres.at(j).r)){
+						placar.incrementarBasesDestruidas();
 						inimigos_terrestres.erase(inimigos_terrestres.begin()+j);
+						if(placar.quantidade_bases_restantes == 0){
+							estado = 3;
+						}
 					}
 				}
 				
@@ -245,7 +245,6 @@ void idle(void){
 			inimigos_aereos.at(i).incrementar_angulo = !inimigos_aereos.at(i).incrementar_angulo;
 		}
 		inimigos_aereos.at(i).alterarAngulo(incremento_angulo);
-		cout << inimigos_aereos.at(0).somatorio_incremento_angulo << endl;
 	}
 
 	if(teclas['r'] == 1) {
@@ -450,7 +449,7 @@ int main(int argc, char** argv){
 		jogador_base = jogador;
 
 		// Cria o placar
-		placar = Placar(arena.r);
+		placar = Placar(arena.r, inimigos_terrestres.size());
 
 	glutInit(&argc, argv);
 	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB);
