@@ -18,6 +18,7 @@ public:
 	float angulo_helices;
 	float somatorio_incremento_angulo;
 	bool incrementar_angulo;
+	float tempo_desde_ultimo_tiro;
 
 	Inimigo();
 	Inimigo(float x, float y, float r, float cor_r, float cor_g, float cor_b, char* fill, int id);

@@ -14,12 +14,13 @@ Bomba::Bomba(){
     this->angulo = 0;
 }
 
-Bomba::Bomba(float x, float y, float r, float angulo){
+Bomba::Bomba(float x, float y, float r, float angulo, float velocidade){
     this->x = x;
     this->y = y;
     this->r = r;
     this->r_inicial = r;
     this->angulo = angulo;
+    this->velocidade = velocidade;
 }
 
 void Bomba::desenharPreenchido(){
@@ -46,9 +47,9 @@ void Bomba::desenharPreenchido(){
 
 }
 
-void Bomba::mover(float velocidade){
-    this->y += velocidade*sin(grausParaRadianos(angulo));
-    this->x += velocidade*cos(grausParaRadianos(angulo));
+void Bomba::mover(float timeDiference){
+    this->y += this->velocidade*timeDiference*sin(grausParaRadianos(angulo));
+    this->x += this->velocidade*timeDiference*cos(grausParaRadianos(angulo));
 }
 
 void Bomba::decrementarRaio(float velocidade){

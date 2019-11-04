@@ -25,6 +25,7 @@ Configuracao configuracao;
 vector<Inimigo> inimigos_aereos;
 vector<Base> inimigos_terrestres;
 vector<Tiro> tiros;
+vector<Tiro> tiros_inimigos;
 vector<Bomba> bombas;
 Circulo arena;
 Jogador jogador;
@@ -200,7 +201,7 @@ void idle(void){
 		// Atualiza estado das bombas
 		for(int i=0; i < bombas.size(); i++){
 			// Posição
-			bombas.at(i).mover(velocidade_decolagem * (timeDiference/1000));
+			bombas.at(i).mover(timeDiference/1000);
 			// Escala
 			if(bombas.at(i).r > bombas.at(i).r_inicial / 2){
 				float decremento_raio = (bombas.at(i).r_inicial / 2) / (4 / (timeDiference/1000));
@@ -243,7 +244,7 @@ void idle(void){
 		if(distancia > arena.r) {
 			teletransportarInimigo(inimigos_aereos.at(i));
 		}
-		// Muda o ângulo (10 graus em 2 segundos)
+		// Muda o ângulo (180 graus em 5 segundos)
 		float incremento_angulo = 180 / (5 / (timeDiference/1000));
 		incremento_angulo = inimigos_aereos.at(i).incrementar_angulo ? incremento_angulo : -incremento_angulo;
 		inimigos_aereos.at(i).somatorio_incremento_angulo += incremento_angulo;
@@ -313,7 +314,8 @@ void mouse(int button, int state, int x, int y){
 			jogador.x, 
 			jogador.y,
 			jogador.r,
-			jogador.angulo
+			jogador.angulo,
+			velocidade_decolagem
 		);
 		bombas.push_back(bomba);
 	}
@@ -340,6 +342,11 @@ int main(int argc, char** argv){
 		XMLElement* xml_jogador 			= doc_configuracoes.FirstChildElement()->FirstChildElement( "jogador" );
 		xml_jogador->QueryFloatAttribute( "vel", &configuracao.jogador_velocidade );
 		xml_jogador->QueryFloatAttribute( "velTiro", &configuracao.tiro_velocidade );
+
+		XMLElement* xml_inimigo 			= doc_configuracoes.FirstChildElement()->FirstChildElement( "inimigo" );
+		xml_jogador->QueryFloatAttribute( "vel", &configuracao.inimigo_velocidade );
+		xml_jogador->QueryFloatAttribute( "velTiro", &configuracao.inimigo_velocidade_tiro );
+		xml_jogador->QueryFloatAttribute( "freqTiro", &configuracao.inimigo_frequencia_tiro );
 
 
 	// ***********************************

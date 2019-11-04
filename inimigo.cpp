@@ -19,6 +19,7 @@ Inimigo::Inimigo(){
     this->angulo_helices = 0;
     this->somatorio_incremento_angulo = 0;
     this->incrementar_angulo = true;
+    this->tempo_desde_ultimo_tiro = 0;
 }
 
 Inimigo::Inimigo(float x, float y, float r, float cor_r, float cor_g, float cor_b, char* fill, int id){
@@ -38,6 +39,7 @@ Inimigo::Inimigo(float x, float y, float r, float cor_r, float cor_g, float cor_
     this->angulo_helices = 0;
     this->somatorio_incremento_angulo = 0;
     this->incrementar_angulo = true;
+    this->tempo_desde_ultimo_tiro = 0;
 }
 
 void Inimigo::desenharPreenchido(){

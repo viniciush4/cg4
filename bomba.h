@@ -5,9 +5,10 @@ public:
 	float r;
 	float r_inicial;
 	float angulo;
+	float velocidade;
 
 	Bomba();
-	Bomba(float x, float y, float r, float angulo);
+	Bomba(float x, float y, float r, float angulo, float velocidade);
 
 	void desenharPreenchido();
 	
