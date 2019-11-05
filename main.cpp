@@ -216,6 +216,7 @@ void idle(void){
 					float distancia_inimigo = sqrt(pow(tiros.at(i).x - inimigos_aereos.at(j).x,2)+pow(tiros.at(i).y - inimigos_aereos.at(j).y,2));
 					if(distancia_inimigo < inimigos_aereos.at(j).r){
 						inimigos_aereos.erase(inimigos_aereos.begin()+j);
+						tiros.erase(tiros.begin()+i);
 					}
 				}
 			}
@@ -289,7 +290,10 @@ void idle(void){
 					inimigos_aereos.at(i).r,
 					inimigos_aereos.at(i).angulo, 	// angulo jogador
 					0, 								// angulo canhão
-					inimigos_aereos.at(i).angulo 	// angulo canhão arena
+					inimigos_aereos.at(i).angulo, 	// angulo canhão arena
+					inimigos_aereos.at(i).cor_r,
+					inimigos_aereos.at(i).cor_g,
+					inimigos_aereos.at(i).cor_b
 				);
 				tiros_inimigos.push_back(tiro);
 				inimigos_aereos.at(i).tempo_desde_ultimo_tiro = 0;
@@ -345,7 +349,10 @@ void mouse(int button, int state, int x, int y){
 			jogador.r,
 			jogador.angulo, 
 			jogador.angulo_canhao,
-			jogador.angulo_canhao_arena
+			jogador.angulo_canhao_arena,
+			jogador.cor_r,
+			jogador.cor_g,
+			jogador.cor_b
 		);
 		tiros.push_back(tiro);
 	}

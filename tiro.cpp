@@ -14,13 +14,16 @@ Tiro::Tiro(){
     this->jogador_angulo = 0;
 }
 
-Tiro::Tiro(float x, float y, float r, float jogador_angulo, float canhao_angulo, float canhao_angulo_arena){
+Tiro::Tiro(float x, float y, float r, float jogador_angulo, float canhao_angulo, float canhao_angulo_arena, float cor_r, float cor_g, float cor_b){
     this->x = x;
     this->y = y;
     this->r = r;
     this->jogador_angulo = jogador_angulo;
     this->canhao_angulo = canhao_angulo;
     this->canhao_angulo_arena = canhao_angulo_arena;
+    this->cor_r = cor_r;
+	this->cor_g = cor_g;
+	this->cor_b = cor_b;
 }
 
 void Tiro::desenharPreenchido(){
@@ -38,7 +41,7 @@ void Tiro::desenharPreenchido(){
             glRotatef(canhao_angulo, 0, 0, 1);
             glTranslatef(10, 0, 0);
             glScalef(0.08, 0.08, 1);
-            glColor3f(1, 1, 0);
+            glColor3f(cor_r, cor_g, cor_b);
             glBegin(GL_POLYGON);
             for(i=0; i<360; i+=20){
                 x_aux = r * cos(grausParaRadianos(i));

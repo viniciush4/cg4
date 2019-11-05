@@ -39,17 +39,15 @@ Jogador::Jogador(float x, float y, float r, float cor_r, float cor_g, float cor_
 void Jogador::desenharPreenchido(){
     glPushMatrix();
 
-        // cout << x << ", " << y << endl;
-
         // Círculo base
-        // float theta = 0.0;
-        // glColor3f(1, 1, 1);
-        // glBegin(GL_POLYGON);
-        // for(int i=0; i < NUMERO_SEGMENTOS; i++){
-        //     glVertex3f(x + r * cos(theta), y + r * sin(theta), 0.0);
-        //     theta += 2*3.1415926f /NUMERO_SEGMENTOS;
-        // }
-        // glEnd();
+        float theta = 0.0;
+        glColor3f(1, 1, 1);
+        glBegin(GL_POLYGON);
+        for(int i=0; i < NUMERO_SEGMENTOS; i++){
+            glVertex3f(x + r * cos(theta), y + r * sin(theta), 0.0);
+            theta += 2*3.1415926f /NUMERO_SEGMENTOS;
+        }
+        glEnd();
 
         glTranslatef(x, y, 0);
         // cout << x << ", " << y << endl;
