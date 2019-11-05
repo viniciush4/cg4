@@ -91,6 +91,7 @@ void reiniciarJogo(){
 	jogador = jogador_base;
 	velocidade_decolagem = 0;
 	tiros.clear();
+	tiros_inimigos.clear();
 	bombas.clear();
 	estado = 0;
 }
@@ -124,17 +125,21 @@ void display(void){
 
 	for(int i=0; i < tiros.size(); i++){
 		tiros.at(i).desenharPreenchido();
+	}
+
+	for(int i=0; i < tiros_inimigos.size(); i++){
+		tiros_inimigos.at(i).desenharPreenchido();
 	}	
 
 	for(int i=0; i < bombas.size(); i++){
 		bombas.at(i).desenharPreenchido();
 	}
 
+	jogador.desenharPreenchido();
+
 	for(int i=0; i < inimigos_aereos.size(); i++){
 		inimigos_aereos.at(i).desenharPreenchido();
 	}
-
-	jogador.desenharPreenchido();
 
 	placar.desenharPreenchido();
 	
@@ -172,9 +177,28 @@ void idle(void){
 	else if(estado == 2){
 
 		jogador.girarHelices(velocidade_decolagem * 2 * (timeDiference/1000));
-		jogador.andar(velocidade_decolagem * (timeDiference/1000));
+		jogador.andar(velocidade_decolagem * (timeDiference/1000) * configuracao.jogador_velocidade);
 
 		verificarColisao();
+
+		// Atualiza estado dos tiros inimigos
+		for(int i=0; i < tiros_inimigos.size(); i++){
+			// Posição
+			tiros_inimigos.at(i).mover(velocidade_decolagem * (timeDiference/1000) * configuracao.inimigo_velocidade_tiro);
+			// Condição de remoção do tiro
+			float distancia = sqrt(pow(tiros_inimigos.at(i).x,2)+pow(tiros_inimigos.at(i).y,2));
+			if(distancia > arena.r){
+				tiros_inimigos.erase(tiros_inimigos.begin()+i);
+			} 
+			else 
+			{
+				// Colisão com o jogador
+				float distancia_jogador = sqrt(pow(tiros_inimigos.at(i).x - jogador.x,2)+pow(tiros_inimigos.at(i).y - jogador.y,2));
+				if(distancia_jogador < jogador.r){
+					estado = 3;
+				}
+			}
+		}
 
 		// Atualiza estado dos tiros
 		for(int i=0; i < tiros.size(); i++){
@@ -195,7 +219,6 @@ void idle(void){
 					}
 				}
 			}
-			
 		}
 
 		// Atualiza estado das bombas
@@ -238,7 +261,7 @@ void idle(void){
 	// Atualiza os inimigos aéreos
 	for(int i=0; i < inimigos_aereos.size(); i++){
 		inimigos_aereos.at(i).girarHelices(velocidade_decolagem * 2 * (timeDiference/1000));
-		inimigos_aereos.at(i).andar(velocidade_decolagem * (timeDiference/1000));
+		inimigos_aereos.at(i).andar(velocidade_decolagem * (timeDiference/1000) * configuracao.inimigo_velocidade);
 		// Colisão com a arena
 		float distancia = sqrt(pow(inimigos_aereos.at(i).x,2)+pow(inimigos_aereos.at(i).y,2));
 		if(distancia > arena.r) {
@@ -257,6 +280,23 @@ void idle(void){
 			inimigos_aereos.at(i).incrementar_angulo = !inimigos_aereos.at(i).incrementar_angulo;
 		}
 		inimigos_aereos.at(i).alterarAngulo(incremento_angulo);
+		// Atira
+		if(estado == 2){
+			if(inimigos_aereos.at(i).tempo_desde_ultimo_tiro > configuracao.inimigo_frequencia_tiro*1000){
+				Tiro tiro = Tiro(
+					inimigos_aereos.at(i).x, 
+					inimigos_aereos.at(i).y,
+					inimigos_aereos.at(i).r,
+					inimigos_aereos.at(i).angulo, 	// angulo jogador
+					0, 								// angulo canhão
+					inimigos_aereos.at(i).angulo 	// angulo canhão arena
+				);
+				tiros_inimigos.push_back(tiro);
+				inimigos_aereos.at(i).tempo_desde_ultimo_tiro = 0;
+			} else {
+				inimigos_aereos.at(i).tempo_desde_ultimo_tiro += timeDiference;
+			}
+		}
 	}
 
 	if(teclas['r'] == 1) {
@@ -344,9 +384,9 @@ int main(int argc, char** argv){
 		xml_jogador->QueryFloatAttribute( "velTiro", &configuracao.tiro_velocidade );
 
 		XMLElement* xml_inimigo 			= doc_configuracoes.FirstChildElement()->FirstChildElement( "inimigo" );
-		xml_jogador->QueryFloatAttribute( "vel", &configuracao.inimigo_velocidade );
-		xml_jogador->QueryFloatAttribute( "velTiro", &configuracao.inimigo_velocidade_tiro );
-		xml_jogador->QueryFloatAttribute( "freqTiro", &configuracao.inimigo_frequencia_tiro );
+		xml_inimigo->QueryFloatAttribute( "vel", &configuracao.inimigo_velocidade );
+		xml_inimigo->QueryFloatAttribute( "velTiro", &configuracao.inimigo_velocidade_tiro );
+		xml_inimigo->QueryFloatAttribute( "freqTiro", &configuracao.inimigo_frequencia_tiro );
 
 
 	// ***********************************
