@@ -10,6 +10,7 @@ public:
 	void desenharPreenchido();
 	void desenharMensagemFinal();
 	void incrementarBasesDestruidas();
+	void resetarPlacar();
 
 	virtual ~Placar();
 };

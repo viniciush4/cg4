@@ -23,7 +23,9 @@ int teclas[256];
 
 Configuracao configuracao;
 vector<Inimigo> inimigos_aereos;
+vector<Inimigo> inimigos_aereos_base;
 vector<Base> inimigos_terrestres;
+vector<Base> inimigos_terrestres_base;
 vector<Tiro> tiros;
 vector<Tiro> tiros_inimigos;
 vector<Bomba> bombas;
@@ -89,10 +91,13 @@ void teletransportarInimigo(Inimigo& inimigo){
 
 void reiniciarJogo(){
 	jogador = jogador_base;
+	inimigos_terrestres = inimigos_terrestres_base;
+	inimigos_aereos = inimigos_aereos_base;
 	velocidade_decolagem = 0;
 	tiros.clear();
 	tiros_inimigos.clear();
 	bombas.clear();
+	placar.resetarPlacar();
 	estado = 0;
 }
 
@@ -251,55 +256,55 @@ void idle(void){
 			}
 		}
 
+		// Atualiza os inimigos aéreos
+		for(int i=0; i < inimigos_aereos.size(); i++){
+			inimigos_aereos.at(i).girarHelices(velocidade_decolagem * 2 * (timeDiference/1000));
+			inimigos_aereos.at(i).andar(velocidade_decolagem * (timeDiference/1000) * configuracao.inimigo_velocidade);
+			// Colisão com a arena
+			float distancia = sqrt(pow(inimigos_aereos.at(i).x,2)+pow(inimigos_aereos.at(i).y,2));
+			if(distancia > arena.r) {
+				teletransportarInimigo(inimigos_aereos.at(i));
+			}
+			// Muda o ângulo (180 graus em 5 segundos)
+			float incremento_angulo = 180 / (5 / (timeDiference/1000));
+			incremento_angulo = inimigos_aereos.at(i).incrementar_angulo ? incremento_angulo : -incremento_angulo;
+			inimigos_aereos.at(i).somatorio_incremento_angulo += incremento_angulo;
+			if(inimigos_aereos.at(i).incrementar_angulo && inimigos_aereos.at(i).somatorio_incremento_angulo > 180){
+				inimigos_aereos.at(i).somatorio_incremento_angulo = 0;
+				inimigos_aereos.at(i).incrementar_angulo = !inimigos_aereos.at(i).incrementar_angulo;
+			}
+			if(!inimigos_aereos.at(i).incrementar_angulo && inimigos_aereos.at(i).somatorio_incremento_angulo < -180){
+				inimigos_aereos.at(i).somatorio_incremento_angulo = 0;
+				inimigos_aereos.at(i).incrementar_angulo = !inimigos_aereos.at(i).incrementar_angulo;
+			}
+			inimigos_aereos.at(i).alterarAngulo(incremento_angulo);
+			// Atira
+			if(estado == 2){
+				if(inimigos_aereos.at(i).tempo_desde_ultimo_tiro > configuracao.inimigo_frequencia_tiro*1000){
+					Tiro tiro = Tiro(
+						inimigos_aereos.at(i).x, 
+						inimigos_aereos.at(i).y,
+						inimigos_aereos.at(i).r,
+						inimigos_aereos.at(i).angulo, 	// angulo jogador
+						0, 								// angulo canhão
+						inimigos_aereos.at(i).angulo, 	// angulo canhão arena
+						inimigos_aereos.at(i).cor_r,
+						inimigos_aereos.at(i).cor_g,
+						inimigos_aereos.at(i).cor_b
+					);
+					tiros_inimigos.push_back(tiro);
+					inimigos_aereos.at(i).tempo_desde_ultimo_tiro = 0;
+				} else {
+					inimigos_aereos.at(i).tempo_desde_ultimo_tiro += timeDiference;
+				}
+			}
+		}
+
 		if(teclas['a'] == 1) {
 			jogador.alterarAngulo(+1 * velocidade_decolagem * (timeDiference/1000));
 		}
 		if(teclas['d'] == 1) {
 			jogador.alterarAngulo(-1 * velocidade_decolagem * (timeDiference/1000));
-		}
-	}
-
-	// Atualiza os inimigos aéreos
-	for(int i=0; i < inimigos_aereos.size(); i++){
-		inimigos_aereos.at(i).girarHelices(velocidade_decolagem * 2 * (timeDiference/1000));
-		inimigos_aereos.at(i).andar(velocidade_decolagem * (timeDiference/1000) * configuracao.inimigo_velocidade);
-		// Colisão com a arena
-		float distancia = sqrt(pow(inimigos_aereos.at(i).x,2)+pow(inimigos_aereos.at(i).y,2));
-		if(distancia > arena.r) {
-			teletransportarInimigo(inimigos_aereos.at(i));
-		}
-		// Muda o ângulo (180 graus em 5 segundos)
-		float incremento_angulo = 180 / (5 / (timeDiference/1000));
-		incremento_angulo = inimigos_aereos.at(i).incrementar_angulo ? incremento_angulo : -incremento_angulo;
-		inimigos_aereos.at(i).somatorio_incremento_angulo += incremento_angulo;
-		if(inimigos_aereos.at(i).incrementar_angulo && inimigos_aereos.at(i).somatorio_incremento_angulo > 180){
-			inimigos_aereos.at(i).somatorio_incremento_angulo = 0;
-			inimigos_aereos.at(i).incrementar_angulo = !inimigos_aereos.at(i).incrementar_angulo;
-		}
-		if(!inimigos_aereos.at(i).incrementar_angulo && inimigos_aereos.at(i).somatorio_incremento_angulo < -180){
-			inimigos_aereos.at(i).somatorio_incremento_angulo = 0;
-			inimigos_aereos.at(i).incrementar_angulo = !inimigos_aereos.at(i).incrementar_angulo;
-		}
-		inimigos_aereos.at(i).alterarAngulo(incremento_angulo);
-		// Atira
-		if(estado == 2){
-			if(inimigos_aereos.at(i).tempo_desde_ultimo_tiro > configuracao.inimigo_frequencia_tiro*1000){
-				Tiro tiro = Tiro(
-					inimigos_aereos.at(i).x, 
-					inimigos_aereos.at(i).y,
-					inimigos_aereos.at(i).r,
-					inimigos_aereos.at(i).angulo, 	// angulo jogador
-					0, 								// angulo canhão
-					inimigos_aereos.at(i).angulo, 	// angulo canhão arena
-					inimigos_aereos.at(i).cor_r,
-					inimigos_aereos.at(i).cor_g,
-					inimigos_aereos.at(i).cor_b
-				);
-				tiros_inimigos.push_back(tiro);
-				inimigos_aereos.at(i).tempo_desde_ultimo_tiro = 0;
-			} else {
-				inimigos_aereos.at(i).tempo_desde_ultimo_tiro += timeDiference;
-			}
 		}
 	}
 
@@ -332,12 +337,14 @@ void keyUp(unsigned char key, int x, int y) {
 }
 
 void passiveMotion(int x, int y){
-	if(x > mouse_ultima_posicao_x)
-		jogador.alterarAnguloCanhao(-3);
-	if(x < mouse_ultima_posicao_x)
-		jogador.alterarAnguloCanhao(3);
+	if(estado == 2){
+		if(x > mouse_ultima_posicao_x)
+			jogador.alterarAnguloCanhao(-3);
+		if(x < mouse_ultima_posicao_x)
+			jogador.alterarAnguloCanhao(3);
 
-	mouse_ultima_posicao_x = x;
+		mouse_ultima_posicao_x = x;
+	}
 }
 
 void mouse(int button, int state, int x, int y){
@@ -445,6 +452,7 @@ int main(int argc, char** argv){
 				i.id = circulo.id;
 				i.escala = circulo.r;
 				inimigos_aereos.push_back(i);
+				inimigos_aereos_base.push_back(i);
 			}
 			if(!strcmp(circulo.fill,"orange")){
 				Base b = Base();
@@ -459,6 +467,7 @@ int main(int argc, char** argv){
 				b.id = circulo.id;
 				b.escala = circulo.r;
 				inimigos_terrestres.push_back(b);
+				inimigos_terrestres_base.push_back(b);
 			}
 			if(!strcmp(circulo.fill,"green")){
 				Jogador j = Jogador();
@@ -511,7 +520,17 @@ int main(int argc, char** argv){
 		float angulo = atan2((pista.y2-pista.y1), (pista.x2-pista.x1));
 		jogador.angulo = radianosParaGraus(angulo);
 		jogador.angulo_canhao_arena = radianosParaGraus(angulo);
+		
+		// Guarda instância Jogador
 		jogador_base = jogador;
+		// Guarda instâncias Inimigos aéreos
+		for(int i=0; i < inimigos_aereos.size(); i++){
+        	inimigos_aereos_base.push_back(inimigos_aereos.at(i));
+		}
+		// Guarda instâncias Inimigos terrestres
+		for(int i=0; i < inimigos_terrestres.size(); i++){
+			inimigos_terrestres_base.push_back(inimigos_terrestres.at(i));
+		}
 
 		// Cria o placar
 		placar = Placar(arena.r, inimigos_terrestres.size());

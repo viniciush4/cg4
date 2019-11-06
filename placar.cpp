@@ -114,5 +114,10 @@ void Placar::incrementarBasesDestruidas(){
     this->quantidade_bases_restantes--;
 }
 
+void Placar::resetarPlacar(){
+    this->quantidade_bases_destruidas = 0;
+    this->quantidade_bases_restantes = this->quantidade_bases;
+}
+
 Placar::~Placar(){
 }
