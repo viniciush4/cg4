@@ -19,23 +19,14 @@ public:
 	float somatorio_incremento_angulo;
 	bool incrementar_angulo;
 	float tempo_desde_ultimo_tiro;
+	float velocidade;
 
 	Inimigo();
-	Inimigo(float x, float y, float r, float cor_r, float cor_g, float cor_b, char* fill, int id);
-	void desenhar();
+	Inimigo(float x, float y, float r, float cor_r, float cor_g, float cor_b, char* fill, int id, float velocidade);
 	void desenharPreenchido();
-
-	void moverParaCima(float velocidade);
-	void moverParaBaixo(float velocidade);
-	void moverParaEsquerda(float velocidade);
-	void moverParaDireita(float velocidade);
-
-	void alterarAngulo(float velocidade);
-	void alterarAnguloCanhao(float velocidade);
-	void alterarEscala(float velocidade);
-
-	void andar(float velocidade);
-	void girarHelices(float velocidade);
+	void alterarAngulo(float incremento);
+	void andar(float coeficiente_ajuste);
+	void girarHelices(float coeficiente_ajuste);
 	
 	virtual ~Inimigo();
 };

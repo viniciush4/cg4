@@ -20,9 +20,10 @@ Inimigo::Inimigo(){
     this->somatorio_incremento_angulo = 0;
     this->incrementar_angulo = true;
     this->tempo_desde_ultimo_tiro = 0;
+    this->velocidade = 0;
 }
 
-Inimigo::Inimigo(float x, float y, float r, float cor_r, float cor_g, float cor_b, char* fill, int id){
+Inimigo::Inimigo(float x, float y, float r, float cor_r, float cor_g, float cor_b, char* fill, int id, float velocidade){
 	this->x = x;
 	this->y = y;
 	this->r = r;
@@ -40,6 +41,7 @@ Inimigo::Inimigo(float x, float y, float r, float cor_r, float cor_g, float cor_
     this->somatorio_incremento_angulo = 0;
     this->incrementar_angulo = true;
     this->tempo_desde_ultimo_tiro = 0;
+    this->velocidade = velocidade;
 }
 
 void Inimigo::desenharPreenchido(){
@@ -211,46 +213,18 @@ void Inimigo::desenharPreenchido(){
     glPopMatrix();
 }
 
-void Inimigo::moverParaCima(float velocidade){
-    this->y = this->y + velocidade;
+void Inimigo::alterarAngulo(float incremento){
+    angulo += incremento;
+    angulo_canhao_arena += incremento;
 }
 
-void Inimigo::moverParaBaixo(float velocidade){
-    this->y = this->y - velocidade;
+void Inimigo::andar(float coeficiente_ajuste){
+    y += sin(grausParaRadianos(angulo)) * velocidade * coeficiente_ajuste;
+    x += cos(grausParaRadianos(angulo)) * velocidade * coeficiente_ajuste;
 }
 
-void Inimigo::moverParaEsquerda(float velocidade){
-    this->x = this->x - velocidade;
-}
-
-void Inimigo::moverParaDireita(float velocidade){
-    this->x = this->x + velocidade;
-}
-
-void Inimigo::alterarAngulo(float velocidade){
-    this->angulo += velocidade;
-    this->angulo_canhao_arena += velocidade;
-}
-
-void Inimigo::alterarAnguloCanhao(float velocidade){
-    if(this->angulo_canhao + velocidade <= 45 && this->angulo_canhao + velocidade >= -45){
-        this->angulo_canhao += velocidade;
-        this->angulo_canhao_arena += velocidade;
-    }
-}
-
-void Inimigo::alterarEscala(float velocidade){
-    this->escala += velocidade;
-    this->r += velocidade;
-}
-
-void Inimigo::andar(float velocidade){
-    this->y += sin(grausParaRadianos(angulo)) * velocidade;
-    this->x += cos(grausParaRadianos(angulo)) * velocidade;
-}
-
-void Inimigo::girarHelices(float velocidade){
-    this->angulo_helices += velocidade;
+void Inimigo::girarHelices(float coeficiente_ajuste){
+    angulo_helices += velocidade * coeficiente_ajuste * 2;
 }
 
 Inimigo::~Inimigo(){

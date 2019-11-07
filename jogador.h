@@ -16,23 +16,16 @@ public:
 	float angulo_canhao;
 	float angulo_canhao_arena;
 	float angulo_helices;
+	float velocidade;
 
 	Jogador();
-	Jogador(float x, float y, float r, float cor_r, float cor_g, float cor_b, char* fill, int id);
-	void desenhar();
+	Jogador(float x, float y, float r, float cor_r, float cor_g, float cor_b, char* fill, int id, float velocidade);
 	void desenharPreenchido();
-
-	void moverParaCima(float velocidade);
-	void moverParaBaixo(float velocidade);
-	void moverParaEsquerda(float velocidade);
-	void moverParaDireita(float velocidade);
-
-	void alterarAngulo(float velocidade);
-	void alterarAnguloCanhao(float velocidade);
-	void alterarEscala(float velocidade);
-
-	void andar(float velocidade);
-	void girarHelices(float velocidade);
+	void alterarAngulo(float coeficiente_ajuste);
+	void alterarAnguloCanhao(float incremento);
+	void alterarEscala(float incremento);
+	void andar(float coeficiente_ajuste);
+	void girarHelices(float coeficiente_ajuste);
 	
 	virtual ~Jogador();
 };

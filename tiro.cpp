@@ -14,7 +14,7 @@ Tiro::Tiro(){
     this->jogador_angulo = 0;
 }
 
-Tiro::Tiro(float x, float y, float r, float jogador_angulo, float canhao_angulo, float canhao_angulo_arena, float cor_r, float cor_g, float cor_b){
+Tiro::Tiro(float x, float y, float r, float jogador_angulo, float canhao_angulo, float canhao_angulo_arena, float cor_r, float cor_g, float cor_b, float velocidade){
     this->x = x;
     this->y = y;
     this->r = r;
@@ -24,6 +24,7 @@ Tiro::Tiro(float x, float y, float r, float jogador_angulo, float canhao_angulo,
     this->cor_r = cor_r;
 	this->cor_g = cor_g;
 	this->cor_b = cor_b;
+    this->velocidade = velocidade;
 }
 
 void Tiro::desenharPreenchido(){
@@ -55,9 +56,9 @@ void Tiro::desenharPreenchido(){
 
 }
 
-void Tiro::mover(float velocidade){
-    this->y += velocidade*sin(grausParaRadianos(canhao_angulo_arena));
-    this->x += velocidade*cos(grausParaRadianos(canhao_angulo_arena));
+void Tiro::mover(float coeficiente_ajuste){
+    y += velocidade*coeficiente_ajuste*sin(grausParaRadianos(canhao_angulo_arena));
+    x += velocidade*coeficiente_ajuste*cos(grausParaRadianos(canhao_angulo_arena));
 }
 
 Tiro::~Tiro(){

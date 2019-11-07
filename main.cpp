@@ -35,7 +35,6 @@ Jogador jogador_base;
 Linha pista;
 Placar placar;
 int estado = 0;
-float velocidade_decolagem = 0;
 int mouse_ultima_posicao_x = 0;
 bool incrementar_angulo_inimigo = true;
 
@@ -93,7 +92,6 @@ void reiniciarJogo(){
 	jogador = jogador_base;
 	inimigos_terrestres = inimigos_terrestres_base;
 	inimigos_aereos = inimigos_aereos_base;
-	velocidade_decolagem = 0;
 	tiros.clear();
 	tiros_inimigos.clear();
 	bombas.clear();
@@ -165,13 +163,13 @@ void idle(void){
 		
 		float distancia 		= sqrt(pow(pista.y2-pista.y1,2) + pow(pista.x2-pista.x1,2));
 		float distancia_jogador = sqrt(pow(jogador.y-pista.y1,2) + pow(jogador.x-pista.x1,2));
-		velocidade_decolagem 	= velocidade_decolagem + (distancia / 8) * (timeDiference/1000); 
+		jogador.velocidade = jogador.velocidade + (distancia / 8) * (timeDiference/1000);
 
-		jogador.girarHelices(velocidade_decolagem * (timeDiference/1000));
-		jogador.andar(velocidade_decolagem * (timeDiference/1000));
+		jogador.girarHelices(timeDiference/1000);
+		jogador.andar(timeDiference/1000);
 
 		if(distancia_jogador >= distancia / 2)
-			jogador.alterarEscala((timeDiference/1000) * velocidade_decolagem * (jogador.r_inicial / (distancia / 2)));			
+			jogador.alterarEscala((timeDiference/1000) * jogador.velocidade * (jogador.r_inicial / (distancia / 2)));			
 
 		if(distancia_jogador >= distancia)
 			estado = 2;
@@ -181,15 +179,15 @@ void idle(void){
 	// Jogando
 	else if(estado == 2){
 
-		jogador.girarHelices(velocidade_decolagem * 2 * (timeDiference/1000));
-		jogador.andar(velocidade_decolagem * (timeDiference/1000) * configuracao.jogador_velocidade);
+		jogador.girarHelices(timeDiference/1000);
+		jogador.andar((timeDiference/1000) * configuracao.jogador_velocidade);
 
 		verificarColisao();
 
 		// Atualiza estado dos tiros inimigos
 		for(int i=0; i < tiros_inimigos.size(); i++){
 			// Posição
-			tiros_inimigos.at(i).mover(velocidade_decolagem * (timeDiference/1000) * configuracao.inimigo_velocidade_tiro);
+			tiros_inimigos.at(i).mover((timeDiference/1000) * configuracao.inimigo_velocidade_tiro);
 			// Condição de remoção do tiro
 			float distancia = sqrt(pow(tiros_inimigos.at(i).x,2)+pow(tiros_inimigos.at(i).y,2));
 			if(distancia > arena.r){
@@ -208,7 +206,7 @@ void idle(void){
 		// Atualiza estado dos tiros
 		for(int i=0; i < tiros.size(); i++){
 			// Posição
-			tiros.at(i).mover(velocidade_decolagem * (timeDiference/1000) * configuracao.tiro_velocidade);
+			tiros.at(i).mover((timeDiference/1000) * configuracao.tiro_velocidade);
 			// Condição de remoção do tiro
 			float distancia = sqrt(pow(tiros.at(i).x,2)+pow(tiros.at(i).y,2));
 			if(distancia > arena.r){
@@ -233,7 +231,7 @@ void idle(void){
 			bombas.at(i).mover(timeDiference/1000);
 			// Escala
 			if(bombas.at(i).r > bombas.at(i).r_inicial / 2){
-				float decremento_raio = (bombas.at(i).r_inicial / 2) / (4 / (timeDiference/1000));
+				float decremento_raio = (bombas.at(i).r_inicial / 2) / (2 / (timeDiference/1000));
 				bombas.at(i).decrementarRaio(decremento_raio);
 			}
 			// Condições de remoção da bomba (saiu da arena ou chegou ao raio mínimo)
@@ -256,10 +254,43 @@ void idle(void){
 			}
 		}
 
+		// Faz os inimigos aéreos atirar
+		for(int i=0; i < inimigos_aereos.size(); i++){
+			// Atira
+			if(inimigos_aereos.at(i).tempo_desde_ultimo_tiro > configuracao.inimigo_frequencia_tiro*1000){
+				Tiro tiro = Tiro(
+					inimigos_aereos.at(i).x, 
+					inimigos_aereos.at(i).y,
+					inimigos_aereos.at(i).r,
+					inimigos_aereos.at(i).angulo, 	// angulo jogador
+					0, 								// angulo canhão
+					inimigos_aereos.at(i).angulo, 	// angulo canhão arena
+					inimigos_aereos.at(i).cor_r,
+					inimigos_aereos.at(i).cor_g,
+					inimigos_aereos.at(i).cor_b,
+					inimigos_aereos.at(i).velocidade
+				);
+				tiros_inimigos.push_back(tiro);
+				inimigos_aereos.at(i).tempo_desde_ultimo_tiro = 0;
+			} else {
+				inimigos_aereos.at(i).tempo_desde_ultimo_tiro += timeDiference;
+			}
+		}
+
+		if(teclas['a'] == 1) {
+			jogador.alterarAngulo(+1 * timeDiference/1000);
+		}
+		if(teclas['d'] == 1) {
+			jogador.alterarAngulo(-1 * timeDiference/1000);
+		}
+	}
+
+	if(estado != 3){
+		
 		// Atualiza os inimigos aéreos
 		for(int i=0; i < inimigos_aereos.size(); i++){
-			inimigos_aereos.at(i).girarHelices(velocidade_decolagem * 2 * (timeDiference/1000));
-			inimigos_aereos.at(i).andar(velocidade_decolagem * (timeDiference/1000) * configuracao.inimigo_velocidade);
+			inimigos_aereos.at(i).girarHelices(timeDiference/1000);
+			inimigos_aereos.at(i).andar((timeDiference/1000) * configuracao.inimigo_velocidade);
 			// Colisão com a arena
 			float distancia = sqrt(pow(inimigos_aereos.at(i).x,2)+pow(inimigos_aereos.at(i).y,2));
 			if(distancia > arena.r) {
@@ -278,33 +309,6 @@ void idle(void){
 				inimigos_aereos.at(i).incrementar_angulo = !inimigos_aereos.at(i).incrementar_angulo;
 			}
 			inimigos_aereos.at(i).alterarAngulo(incremento_angulo);
-			// Atira
-			if(estado == 2){
-				if(inimigos_aereos.at(i).tempo_desde_ultimo_tiro > configuracao.inimigo_frequencia_tiro*1000){
-					Tiro tiro = Tiro(
-						inimigos_aereos.at(i).x, 
-						inimigos_aereos.at(i).y,
-						inimigos_aereos.at(i).r,
-						inimigos_aereos.at(i).angulo, 	// angulo jogador
-						0, 								// angulo canhão
-						inimigos_aereos.at(i).angulo, 	// angulo canhão arena
-						inimigos_aereos.at(i).cor_r,
-						inimigos_aereos.at(i).cor_g,
-						inimigos_aereos.at(i).cor_b
-					);
-					tiros_inimigos.push_back(tiro);
-					inimigos_aereos.at(i).tempo_desde_ultimo_tiro = 0;
-				} else {
-					inimigos_aereos.at(i).tempo_desde_ultimo_tiro += timeDiference;
-				}
-			}
-		}
-
-		if(teclas['a'] == 1) {
-			jogador.alterarAngulo(+1 * velocidade_decolagem * (timeDiference/1000));
-		}
-		if(teclas['d'] == 1) {
-			jogador.alterarAngulo(-1 * velocidade_decolagem * (timeDiference/1000));
 		}
 	}
 
@@ -324,10 +328,10 @@ void keyPress(unsigned char key, int x, int y) {
 			estado = (estado == 0) ? 1 : estado;
 			break;
 		case '+':
-			velocidade_decolagem += (estado == 2) ? 1 : 0;
+			jogador.velocidade += (estado == 2) ? 1 : 0;
 			break;
 		case '-':
-			velocidade_decolagem -= (estado == 2) ? ((velocidade_decolagem > 50) ? 1 : 0) : 0;
+			jogador.velocidade -= (estado == 2) ? ((jogador.velocidade > 50) ? 1 : 0) : 0;
 			break;
 	}
 }
@@ -359,7 +363,8 @@ void mouse(int button, int state, int x, int y){
 			jogador.angulo_canhao_arena,
 			jogador.cor_r,
 			jogador.cor_g,
-			jogador.cor_b
+			jogador.cor_b,
+			jogador.velocidade
 		);
 		tiros.push_back(tiro);
 	}
@@ -369,7 +374,7 @@ void mouse(int button, int state, int x, int y){
 			jogador.y,
 			jogador.r,
 			jogador.angulo,
-			velocidade_decolagem
+			jogador.velocidade
 		);
 		bombas.push_back(bomba);
 	}
@@ -520,11 +525,16 @@ int main(int argc, char** argv){
 		float angulo = atan2((pista.y2-pista.y1), (pista.x2-pista.x1));
 		jogador.angulo = radianosParaGraus(angulo);
 		jogador.angulo_canhao_arena = radianosParaGraus(angulo);
+
+		// Calcula a velocidade dos inimigos
+		float distancia 					= sqrt(pow(pista.y2-pista.y1,2) + pow(pista.x2-pista.x1,2));
+		float velocidade_decolagem_final 	= (distancia / 8) * 4;
 		
 		// Guarda instância Jogador
 		jogador_base = jogador;
 		// Guarda instâncias Inimigos aéreos
 		for(int i=0; i < inimigos_aereos.size(); i++){
+			inimigos_aereos.at(i).velocidade = velocidade_decolagem_final;
         	inimigos_aereos_base.push_back(inimigos_aereos.at(i));
 		}
 		// Guarda instâncias Inimigos terrestres

@@ -47,9 +47,9 @@ void Bomba::desenharPreenchido(){
 
 }
 
-void Bomba::mover(float timeDiference){
-    this->y += this->velocidade*timeDiference*sin(grausParaRadianos(angulo));
-    this->x += this->velocidade*timeDiference*cos(grausParaRadianos(angulo));
+void Bomba::mover(float coeficiente_ajuste){
+    y += velocidade*coeficiente_ajuste*sin(grausParaRadianos(angulo));
+    x += velocidade*coeficiente_ajuste*cos(grausParaRadianos(angulo));
 }
 
 void Bomba::decrementarRaio(float velocidade){

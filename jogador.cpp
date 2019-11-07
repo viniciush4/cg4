@@ -17,9 +17,10 @@ Jogador::Jogador(){
     this->angulo_canhao = 0;
     this->angulo_canhao_arena = 0;
     this->angulo_helices = 0;
+    this->velocidade = 0;
 }
 
-Jogador::Jogador(float x, float y, float r, float cor_r, float cor_g, float cor_b, char* fill, int id){
+Jogador::Jogador(float x, float y, float r, float cor_r, float cor_g, float cor_b, char* fill, int id, float velocidade){
 	this->x = x;
 	this->y = y;
 	this->r = r;
@@ -34,20 +35,21 @@ Jogador::Jogador(float x, float y, float r, float cor_r, float cor_g, float cor_
     this->angulo_canhao = 0;
     this->angulo_canhao_arena = 0;
     this->angulo_helices = 0;
+    this->velocidade = velocidade;
 }
 
 void Jogador::desenharPreenchido(){
     glPushMatrix();
 
         // Círculo base
-        float theta = 0.0;
-        glColor3f(1, 1, 1);
-        glBegin(GL_POLYGON);
-        for(int i=0; i < NUMERO_SEGMENTOS; i++){
-            glVertex3f(x + r * cos(theta), y + r * sin(theta), 0.0);
-            theta += 2*3.1415926f /NUMERO_SEGMENTOS;
-        }
-        glEnd();
+        // float theta = 0.0;
+        // glColor3f(1, 1, 1);
+        // glBegin(GL_POLYGON);
+        // for(int i=0; i < NUMERO_SEGMENTOS; i++){
+        //     glVertex3f(x + r * cos(theta), y + r * sin(theta), 0.0);
+        //     theta += 2*3.1415926f /NUMERO_SEGMENTOS;
+        // }
+        // glEnd();
 
         glTranslatef(x, y, 0);
         // cout << x << ", " << y << endl;
@@ -203,46 +205,30 @@ void Jogador::desenharPreenchido(){
     glPopMatrix();
 }
 
-void Jogador::moverParaCima(float velocidade){
-    this->y = this->y + velocidade;
+void Jogador::alterarAngulo(float coeficiente_ajuste){
+    angulo += velocidade * coeficiente_ajuste;
+    angulo_canhao_arena += velocidade * coeficiente_ajuste;
 }
 
-void Jogador::moverParaBaixo(float velocidade){
-    this->y = this->y - velocidade;
-}
-
-void Jogador::moverParaEsquerda(float velocidade){
-    this->x = this->x - velocidade;
-}
-
-void Jogador::moverParaDireita(float velocidade){
-    this->x = this->x + velocidade;
-}
-
-void Jogador::alterarAngulo(float velocidade){
-    this->angulo += velocidade;
-    this->angulo_canhao_arena += velocidade;
-}
-
-void Jogador::alterarAnguloCanhao(float velocidade){
-    if(this->angulo_canhao + velocidade <= 45 && this->angulo_canhao + velocidade >= -45){
-        this->angulo_canhao += velocidade;
-        this->angulo_canhao_arena += velocidade;
+void Jogador::alterarAnguloCanhao(float incremento){
+    if(angulo_canhao + incremento <= 45 && angulo_canhao + incremento >= -45){
+        angulo_canhao += incremento;
+        angulo_canhao_arena += incremento;
     }
 }
 
-void Jogador::alterarEscala(float velocidade){
-    this->escala += velocidade;
-    this->r += velocidade;
+void Jogador::alterarEscala(float incremento){
+    escala += incremento;
+    r += incremento;
 }
 
-void Jogador::andar(float velocidade){
-    this->y += sin(grausParaRadianos(angulo)) * velocidade;
-    this->x += cos(grausParaRadianos(angulo)) * velocidade;
+void Jogador::andar(float coeficiente_ajuste){
+    y += sin(grausParaRadianos(angulo)) * velocidade * coeficiente_ajuste;
+    x += cos(grausParaRadianos(angulo)) * velocidade * coeficiente_ajuste;
 }
 
-void Jogador::girarHelices(float velocidade){
-    this->angulo_helices += velocidade;
+void Jogador::girarHelices(float coeficiente_ajuste){
+    angulo_helices += velocidade * coeficiente_ajuste * 2;
 }
 
 Jogador::~Jogador(){

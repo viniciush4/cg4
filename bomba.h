@@ -12,7 +12,7 @@ public:
 
 	void desenharPreenchido();
 	
-	void mover(float velocidade);
+	void mover(float coeficiente_ajuste);
 	void decrementarRaio(float velocidade);
 	
 	virtual ~Bomba();
