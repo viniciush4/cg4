@@ -126,6 +126,10 @@ void display(void){
 		inimigos_terrestres.at(i).desenharPreenchido();
 	}
 
+	for(int i=0; i < bombas.size(); i++){
+		bombas.at(i).desenharPreenchido();
+	}
+
 	for(int i=0; i < tiros.size(); i++){
 		tiros.at(i).desenharPreenchido();
 	}
@@ -133,10 +137,6 @@ void display(void){
 	for(int i=0; i < tiros_inimigos.size(); i++){
 		tiros_inimigos.at(i).desenharPreenchido();
 	}	
-
-	for(int i=0; i < bombas.size(); i++){
-		bombas.at(i).desenharPreenchido();
-	}
 
 	jogador.desenharPreenchido();
 
