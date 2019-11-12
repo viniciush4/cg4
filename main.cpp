@@ -553,14 +553,12 @@ void keyUp(unsigned char key, int x, int y) {
 }
 
 void passiveMotion(int x, int y){
-	if(estado == 2){
-		if(x > mouse_ultima_posicao_x)
-			jogador.alterarAnguloCanhao(-3);
-		if(x < mouse_ultima_posicao_x)
-			jogador.alterarAnguloCanhao(3);
+	if(x > mouse_ultima_posicao_x)
+		jogador.alterarAnguloCanhao(-3);
+	if(x < mouse_ultima_posicao_x)
+		jogador.alterarAnguloCanhao(3);
 
-		mouse_ultima_posicao_x = x;
-	}
+	mouse_ultima_posicao_x = x;
 }
 
 void mouse(int button, int state, int x, int y){
