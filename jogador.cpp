@@ -42,38 +42,24 @@ void Jogador::desenharPreenchido(){
     glPushMatrix();
 
         // Círculo base
-        // float theta = 0.0;
-        // glColor3f(1, 1, 1);
-        // glBegin(GL_POLYGON);
-        // for(int i=0; i < NUMERO_SEGMENTOS; i++){
-        //     glVertex3f(x + r * cos(theta), y + r * sin(theta), 0.0);
-        //     theta += 2*3.1415926f /NUMERO_SEGMENTOS;
-        // }
-        // glEnd();
+        float theta = 0.0;
+        glColor3f(1, 1, 1);
+        glBegin(GL_POLYGON);
+        for(int i=0; i < NUMERO_SEGMENTOS; i++){
+            glVertex3f(x + r * cos(theta), y + r * sin(theta), 0.0);
+            theta += 2*3.1415926f /NUMERO_SEGMENTOS;
+        }
+        glEnd();
 
         glTranslatef(x, y, 0);
-        // cout << x << ", " << y << endl;
 
         glRotatef(angulo, 0, 0, 1);
         
-
         glScalef(escala, escala, 1);
 
 
         GLfloat x_aux, y_aux;
         int i;
-
-        // Desenha um círculo model
-        // glPushMatrix();
-        //     glColor3f(1, 1, 1);
-        //     glBegin(GL_POLYGON);
-        //     for(i=0; i<360; i+=20){
-        //         x_aux = 1 * cos(M_PI*i/180);
-        //         y_aux = 1 * sin(M_PI*i/180);
-        //         glVertex3f(x_aux, y_aux, 0);
-        //     }
-        //     glEnd();
-        // glPopMatrix();
 
         // Desenha o canhão
         glPushMatrix();
@@ -187,20 +173,6 @@ void Jogador::desenharPreenchido(){
             glVertex3f(-0.1, -0.4, 0);
         glEnd();
         glPopMatrix();
-
-        // glPushMatrix();
-        //     glTranslatef(1, 0, 0);
-        //     glScalef(0.1, 0.1, 1);
-        //     glColor3f(1, 1, 0);
-        //     glBegin(GL_POLYGON);
-        //     for(i=0; i<360; i+=20){
-        //         x_aux = 1 * cos(M_PI*i/180);
-        //         y_aux = 1 * sin(M_PI*i/180);
-        //         glVertex3f(x_aux, y_aux, 0);
-        //     }
-        //     glEnd();
-        // glPopMatrix();
-
 
     glPopMatrix();
 }

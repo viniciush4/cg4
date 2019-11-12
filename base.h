@@ -19,20 +19,7 @@ public:
 
 	Base();
 	Base(float x, float y, float r, float cor_r, float cor_g, float cor_b, char* fill, int id);
-	void desenhar();
 	void desenharPreenchido();
-
-	void moverParaCima(float velocidade);
-	void moverParaBaixo(float velocidade);
-	void moverParaEsquerda(float velocidade);
-	void moverParaDireita(float velocidade);
-
-	void alterarAngulo(float velocidade);
-	void alterarAnguloCanhao(float velocidade);
-	void alterarEscala(float velocidade);
-
-	void andar(float velocidade);
-	void girarHelices(float velocidade);
 	
 	virtual ~Base();
 };

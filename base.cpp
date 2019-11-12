@@ -99,47 +99,5 @@ void Base::desenharPreenchido(){
     glPopMatrix();
 }
 
-void Base::moverParaCima(float velocidade){
-    this->y = this->y + velocidade;
-}
-
-void Base::moverParaBaixo(float velocidade){
-    this->y = this->y - velocidade;
-}
-
-void Base::moverParaEsquerda(float velocidade){
-    this->x = this->x - velocidade;
-}
-
-void Base::moverParaDireita(float velocidade){
-    this->x = this->x + velocidade;
-}
-
-void Base::alterarAngulo(float velocidade){
-    this->angulo += velocidade;
-    this->angulo_canhao_arena += velocidade;
-}
-
-void Base::alterarAnguloCanhao(float velocidade){
-    if(this->angulo_canhao + velocidade <= 45 && this->angulo_canhao + velocidade >= -45){
-        this->angulo_canhao += velocidade;
-        this->angulo_canhao_arena += velocidade;
-    }
-}
-
-void Base::alterarEscala(float velocidade){
-    this->escala += velocidade;
-    this->r += velocidade;
-}
-
-void Base::andar(float velocidade){
-    this->y += sin(grausParaRadianos(angulo)) * velocidade;
-    this->x += cos(grausParaRadianos(angulo)) * velocidade;
-}
-
-void Base::girarHelices(float velocidade){
-    this->angulo_helices += velocidade;
-}
-
 Base::~Base(){
 }
