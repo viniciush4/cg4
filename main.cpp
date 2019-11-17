@@ -359,7 +359,7 @@ void criarTirosInimigos(){
 	for(auto it=inimigos_aereos.begin(); it!=inimigos_aereos.end();++it){
 		Inimigo &inimigo = *it;
 		// Atira
-		if(inimigo.tempo_desde_ultimo_tiro > configuracao.inimigo_frequencia_tiro*1000){
+		if(inimigo.tempo_desde_ultimo_tiro > 1000/configuracao.inimigo_frequencia_tiro){
 			Tiro tiro = Tiro(
 				inimigo.x, 
 				inimigo.y,
